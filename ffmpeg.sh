@@ -2,10 +2,10 @@
 
 set -xeuo pipefail
 
-VIDEO_BITRATE=3000
+VIDEO_BITRATE=6000
 VIDEO_FRAMERATE=30
 VIDEO_GOP=$((VIDEO_FRAMERATE * 2))
-AUDIO_BITRATE='192k'
+AUDIO_BITRATE='320k'
 AUDIO_SAMPLERATE=44100
 AUDIO_CHANNELS=2
 
@@ -31,8 +31,9 @@ CMD=(
      # codec video with libx264
      -c:v libx264
          -pix_fmt yuv420p
-         -profile main
-         -preset veryfast
+         -profile high
+         -preset ultrafast
+         -tune zerolatency
          -x264opts nal-hrd=cbr:keyint=120:scenecut=0
          -minrate ${VIDEO_BITRATE}
          -maxrate ${VIDEO_BITRATE}
@@ -47,8 +48,8 @@ CMD=(
          # -af "aresample=async=1:min_hard_comp=0.100000:first_pts=0"
      # adjust fragmentation to prevent seeking(resolve issue: muxer does not support non seekable output)
      -movflags frag_keyframe+empty_moov
-     # set output format to RTSP
-     -f rtsp
+     # set output format to flv
+     -f flv
      "${RTMP_URL}"
 )
 
